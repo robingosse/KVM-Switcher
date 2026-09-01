@@ -23,6 +23,11 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
 
+      - name: Install ARM toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi ninja-build
+
       - name: Checkout Pico SDK
         uses: actions/checkout@v4
         with:
@@ -34,7 +39,7 @@ jobs:
       - name: Configure firmware
         env:
           PICO_SDK_PATH: ${{ github.workspace }}/pico-sdk
-        run: cmake -S firmware -B build
+        run: cmake -S firmware -B build -G Ninja
 
       - name: Build firmware
         run: cmake --build build --parallel 2
