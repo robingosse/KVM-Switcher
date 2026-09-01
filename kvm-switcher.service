@@ -1,0 +1,13 @@
+[Unit]
+Description=KVM Switcher GPIO Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/kvm-switcher/server.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
