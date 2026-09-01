@@ -23,16 +23,16 @@ Canonical harness:
 
 ## Controller
 
-Controller is a Waveshare-style `RP2040-Zero`, not a Raspberry Pi Zero Linux computer.
+Controller is an `RP2040-Zero`, not a Raspberry Pi Zero Linux computer.
 
-Default firmware GPIO map:
+Canonical GPIO map:
 
 | KVM input | Harness | RP2040 GPIO |
 |---|---|---:|
-| 1 | Blue | GP2 |
-| 2 | Yellow | GP3 |
+| 1 | Blue | GP0 |
+| 2 | Yellow | GP2 |
 | 3 | White | GP4 |
-| 4 | Red | GP5 |
+| 4 | Red | GP6 |
 
 ## Isolation/interface
 
@@ -60,10 +60,10 @@ The KVM black GND wire is shared only across the KVM side of the four PhotoMOS o
 ## Channel wiring
 
 ```text
-GP2 -> 330R -> PhotoMOS CH1 LED    PhotoMOS CH1 output -> Blue / KVM GND
-GP3 -> 330R -> PhotoMOS CH2 LED    PhotoMOS CH2 output -> Yellow / KVM GND
+GP0 -> 330R -> PhotoMOS CH1 LED    PhotoMOS CH1 output -> Blue / KVM GND
+GP2 -> 330R -> PhotoMOS CH2 LED    PhotoMOS CH2 output -> Yellow / KVM GND
 GP4 -> 330R -> PhotoMOS CH3 LED    PhotoMOS CH3 output -> White / KVM GND
-GP5 -> 330R -> PhotoMOS CH4 LED    PhotoMOS CH4 output -> Red / KVM GND
+GP6 -> 330R -> PhotoMOS CH4 LED    PhotoMOS CH4 output -> Red / KVM GND
 ```
 
 ## Behaviour
