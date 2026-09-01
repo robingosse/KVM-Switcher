@@ -3,7 +3,7 @@
 
 #define PULSE_MS 150
 
-static const uint GPIO_BY_INPUT[4] = {2, 3, 4, 5};
+static const uint GPIO_BY_INPUT[4] = {0, 2, 4, 6};
 
 static void press_input(int input) {
     if (input < 1 || input > 4) {
