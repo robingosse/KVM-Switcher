@@ -1,12 +1,16 @@
 # KVM-Switcher
 
-Raspberry Pi Zero controller that electronically presses the existing input-select buttons on a 4-port KVM and exposes simple network commands for hotkey switching.
+RP2040-Zero controller that electronically presses the four existing input-select buttons on a modified 4-port KVM.
 
-## Confirmed KVM wiring
+## Architecture
 
-The selector buttons short their signal pin to KVM ground when pressed.
+```text
+active PC -> USB serial -> RP2040-Zero -> 4 x PhotoMOS -> KVM buttons
+```
 
-Harness mapping:
+The host sends `1`, `2`, `3`, or `4`. Firmware closes the matching isolated PhotoMOS channel for 150 ms, reproducing a physical button press.
+
+## Confirmed KVM harness
 
 - Input 1 = Blue
 - Input 2 = Yellow
@@ -14,28 +18,38 @@ Harness mapping:
 - Input 4 = Red
 - KVM GND = Black
 
-Interface: four isolated Panasonic `AQY212GS` PhotoMOS relays (LCSC `C719745`), one per input. Do **not** join Pi GND to KVM GND.
+See [`HARDWARE.md`](HARDWARE.md) for the exact wiring.
 
-See [`HARDWARE.md`](HARDWARE.md) for the exact wiring and default GPIO map.
+## RP2040 GPIO map
 
-## Quick start on the Pi
+- Input 1 / Blue = GP2
+- Input 2 / Yellow = GP3
+- Input 3 / White = GP4
+- Input 4 / Red = GP5
+
+Each GPIO drives one PhotoMOS input LED through a 330 ohm resistor. RP2040 ground and KVM ground remain isolated.
+
+## Firmware
+
+Firmware lives in `firmware/` and uses the Raspberry Pi Pico SDK with USB CDC serial enabled.
+
+Build:
 
 ```bash
-sudo ./install.sh
-sudo nano /etc/kvm-switcher/config.json
-sudo systemctl restart kvm-switcher
+export PICO_SDK_PATH=/path/to/pico-sdk
+cmake -S firmware -B build
+cmake --build build
 ```
 
-## Client command
+Flash `build/kvm_switcher.uf2` while the RP2040-Zero is in BOOTSEL mode.
+
+## Host client
 
 ```bash
-python3 kvmctl.py 2 --host kvmzero.local --token YOUR_TOKEN
+python3 -m pip install -r requirements.txt
+python3 kvmctl.py 2
 ```
 
-Bind that command to any desktop hotkey you like.
+`kvmctl.py` automatically looks for a Raspberry Pi RP2040 USB serial device. Use `--port /dev/ttyACM0` if auto-detection is ambiguous.
 
-## Configuration
-
-Copy/edit `config.example.json`. GPIO numbers use BCM numbering.
-
-Default GPIOs are 17, 27, 22, and 23 for KVM inputs 1 through 4. The default virtual button press is 150 ms.
+Bind `kvmctl.py 1`, `2`, `3`, and `4` to whatever desktop hotkeys you want.
