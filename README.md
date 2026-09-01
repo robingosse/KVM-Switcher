@@ -1,16 +1,22 @@
 # KVM-Switcher
 
-Raspberry Pi Zero controller that electronically presses the existing input-select buttons on a KVM and exposes simple network commands for hotkey switching.
+Raspberry Pi Zero controller that electronically presses the existing input-select buttons on a 4-port KVM and exposes simple network commands for hotkey switching.
 
-## Hardware
+## Confirmed KVM wiring
 
-Do **not** connect unknown KVM button circuitry directly to Pi GPIO until measured.
+The selector buttons short their signal pin to KVM ground when pressed.
 
-Recommended interface:
+Harness mapping:
 
-`Pi GPIO -> opto/PhotoMOS/transistor -> two wires across existing KVM pushbutton`
+- Input 1 = Blue
+- Input 2 = Yellow
+- Input 3 = White
+- Input 4 = Red
+- KVM GND = Black
 
-The Pi only needs to imitate a momentary button press.
+Interface: four isolated Panasonic `AQY212GS` PhotoMOS relays (LCSC `C719745`), one per input. Do **not** join Pi GND to KVM GND.
+
+See [`HARDWARE.md`](HARDWARE.md) for the exact wiring and default GPIO map.
 
 ## Quick start on the Pi
 
@@ -30,6 +36,6 @@ Bind that command to any desktop hotkey you like.
 
 ## Configuration
 
-Copy/edit `config.example.json`. GPIO numbers use BCM numbering. Add or remove inputs as required.
+Copy/edit `config.example.json`. GPIO numbers use BCM numbering.
 
-The default pulse is 150 ms.
+Default GPIOs are 17, 27, 22, and 23 for KVM inputs 1 through 4. The default virtual button press is 150 ms.
