@@ -22,10 +22,10 @@ See [`HARDWARE.md`](HARDWARE.md) for the exact wiring.
 
 ## RP2040 GPIO map
 
-- Input 1 / Blue = GP2
-- Input 2 / Yellow = GP3
+- Input 1 / Blue = GP0
+- Input 2 / Yellow = GP2
 - Input 3 / White = GP4
-- Input 4 / Red = GP5
+- Input 4 / Red = GP6
 
 Each GPIO drives one PhotoMOS input LED through a 330 ohm resistor. RP2040 ground and KVM ground remain isolated.
 
@@ -50,6 +50,6 @@ python3 -m pip install -r requirements.txt
 python3 kvmctl.py 2
 ```
 
-`kvmctl.py` automatically looks for a Raspberry Pi RP2040 USB serial device. Use `--port /dev/ttyACM0` if auto-detection is ambiguous.
+`kvmctl.py` automatically looks for an RP2040 USB serial device. Use `--port /dev/ttyACM0` if auto-detection is ambiguous.
 
 Bind `kvmctl.py 1`, `2`, `3`, and `4` to whatever desktop hotkeys you want.
