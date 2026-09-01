@@ -17,12 +17,33 @@ jobs:
       - name: Compile host client
         run: python -m py_compile kvmctl.py
 
-  firmware-source:
+  firmware-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Sanity check firmware files
-        run: |
-          test -f firmware/main.c
-          test -f firmware/CMakeLists.txt
-          grep -q 'GPIO_BY_INPUT\[4\] = {0, 2, 4, 6}' firmware/main.c
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Checkout Pico SDK
+        uses: actions/checkout@v4
+        with:
+          repository: raspberrypi/pico-sdk
+          ref: 2.1.1
+          path: pico-sdk
+          submodules: recursive
+
+      - name: Configure firmware
+        env:
+          PICO_SDK_PATH: ${{ github.workspace }}/pico-sdk
+        run: cmake -S firmware -B build
+
+      - name: Build firmware
+        run: cmake --build build --parallel 2
+
+      - name: Verify GPIO map
+        run: grep -q 'GPIO_BY_INPUT\[4\] = {0, 2, 4, 6}' firmware/main.c
+
+      - name: Upload UF2
+        uses: actions/upload-artifact@v4
+        with:
+          name: kvm-switcher-uf2
+          path: build/kvm_switcher.uf2
