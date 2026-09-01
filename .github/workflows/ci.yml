@@ -36,19 +36,46 @@ jobs:
           path: pico-sdk
           submodules: recursive
 
-      - name: Configure firmware
+      - name: Checkout Pico-PIO-USB
+        uses: actions/checkout@v4
+        with:
+          repository: sekigon-gonnoc/Pico-PIO-USB
+          ref: 5a37a66dc5d3fbe0ef3cdbeda923a757440f984f
+          path: pico-pio-usb
+
+      - name: Configure serial firmware
         env:
           PICO_SDK_PATH: ${{ github.workspace }}/pico-sdk
         run: cmake -S firmware -B build -G Ninja
 
-      - name: Build firmware
+      - name: Build serial firmware
         run: cmake --build build --parallel 2
 
       - name: Verify GPIO map
         run: grep -q 'GPIO_BY_INPUT\[4\] = {0, 2, 4, 6}' firmware/main.c
 
-      - name: Upload UF2
+      - name: Upload serial UF2
         uses: actions/upload-artifact@v4
         with:
           name: kvm-switcher-uf2
           path: build/kvm_switcher.uf2
+
+      - name: Configure keyboard proxy firmware
+        env:
+          PICO_SDK_PATH: ${{ github.workspace }}/pico-sdk
+          PICO_PIO_USB_PATH: ${{ github.workspace }}/pico-pio-usb
+        run: cmake -S proxy_firmware -B proxy_build -G Ninja
+
+      - name: Build keyboard proxy firmware
+        run: cmake --build proxy_build --parallel 2
+
+      - name: Verify proxy GPIO map
+        run: |
+          grep -q 'GPIO_BY_INPUT\[4\] = {0, 2, 4, 6}' proxy_firmware/main.c
+          grep -q '#define HOST_PIN_DP 8' proxy_firmware/main.c
+
+      - name: Upload keyboard proxy UF2
+        uses: actions/upload-artifact@v4
+        with:
+          name: kvm-keyboard-proxy-uf2
+          path: proxy_build/kvm_keyboard_proxy.uf2
